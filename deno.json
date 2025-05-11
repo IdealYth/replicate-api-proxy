@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-env main.ts"
+  },
+  "imports": {
+    "replicate": "npm:replicate",
+    "gpt-tokenizer/encoding/o200k_base": "npm:gpt-tokenizer/encoding/o200k_base"
+  }
+} 
