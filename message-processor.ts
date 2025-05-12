@@ -154,10 +154,27 @@ export function buildModelInput(
     systemPrompt: string,
     imageUrls: string[]
 ): ModelInput {
+    // 增强系统提示，防止模型自问自答
+    let enhancedSystemPrompt = systemPrompt || "";
+    
+    // 添加防止自问自答的指令
+    const antiSelfDialoguePrompt = 
+        "请只回答用户的最后一个问题。回答后请立即停止，不要继续生成更多的对话、不要模拟用户提问、不要自问自答。你的回复应该是对用户最后一个问题的完整回答，然后停止。";
+    
+    // 如果原系统提示不为空，添加换行；否则直接使用增强提示
+    if (enhancedSystemPrompt) {
+        enhancedSystemPrompt = `${enhancedSystemPrompt}\n\n${antiSelfDialoguePrompt}`;
+    } else {
+        enhancedSystemPrompt = antiSelfDialoguePrompt;
+    }
+    
+    // 记录增强后的系统提示
+    logDebug("增强后的系统提示:", enhancedSystemPrompt);
+    
     const input: ModelInput = {
         prompt: userContent,
         max_tokens: 64000,
-        system_prompt: systemPrompt,
+        system_prompt: enhancedSystemPrompt, // 使用增强后的系统提示
         max_image_resolution: 0.5
     };
 
