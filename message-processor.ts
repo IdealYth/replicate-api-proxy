@@ -138,6 +138,11 @@ function formatMessagesToConversation(messages: Message[]): string {
         }
     }
 
+    // 添加特殊指示到对话末尾，防止模型自问自答
+    if (formattedContent && messages.length > 0 && messages[messages.length - 1].role === "user") {
+        formattedContent += "[请直接回答上述问题，提供完整详细的回答，然后停止。不要使用‘user：xxxx’模拟用户提问。严禁生成任何形式的'user:'等角色标记，不要模拟上下文中的‘user：xxxx，assistant：xxxx这种对话格式’，只需回答用户提出的问题即可。]\n";
+    }
+
     logDebug("Formatted user content:", formattedContent);
     return formattedContent;
 }
@@ -159,7 +164,7 @@ export function buildModelInput(
     
     // 添加防止自问自答的指令
     const antiSelfDialoguePrompt = 
-        "请只回答用户的最后一个问题。回答后请立即停止，不要继续生成更多的对话、不要模拟用户提问、不要自问自答。你的回复应该是对用户最后一个问题的完整回答，然后停止。";
+        "请直接回答上述问题，提供完整详细的回答，然后停止。不要使用‘user：xxxx’模拟用户提问。严禁生成任何形式的'user:'等角色标记，不要模拟上下文中的‘user：xxxx，assistant：xxxx这种对话格式’，只需回答用户提出的问题即可。";
     
     // 如果原系统提示不为空，添加换行；否则直接使用增强提示
     if (enhancedSystemPrompt) {
